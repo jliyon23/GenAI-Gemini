@@ -1,14 +1,12 @@
-// App.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Typewriter from "typewriter-effect";
-import { FaGithub } from "react-icons/fa";
-
 
 function App() {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+  const [displayedOutput, setDisplayedOutput] = useState("");
   const [error, setError] = useState("");
 
   const API_KEY = import.meta.env.VITE_API_GENERATIVE_LANGUAGE_CLIENT;
@@ -17,6 +15,7 @@ function App() {
     setLoading(true);
     setError("");
     setOutput("");
+    setDisplayedOutput("");
     try {
       const response = await axios({
         url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
@@ -25,6 +24,7 @@ function App() {
           contents: [{ parts: [{ text: input }] }],
         },
       });
+      console.log(response.data);
       setOutput(response.data.candidates[0].content.parts[0].text);
       setLoading(false);
     } catch (error) {
@@ -34,6 +34,21 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (output) {
+      let index = 0;
+      const outputParts = output.split(/(<.*?>| )/); // Splitting the HTML content by tags and spaces
+      const displayNextPart = () => {
+        if (index < outputParts.length) {
+          setDisplayedOutput((prev) => prev + outputParts[index]);
+          index++;
+          setTimeout(displayNextPart, 50); // Adjust the delay for typing speed
+        }
+      };
+      displayNextPart();
+    }
+  }, [output]);
+
   return (
     <div className="w-100 min-h-screen bg-slate-50 flex flex-col">
       <header>
@@ -41,7 +56,7 @@ function App() {
           <h1 className="text-4xl text-white font-bold">
             Gen<span className="text-cyan-400">AI</span>
           </h1>
-          <a href="" className="text-3xl text-white"><FaGithub/></a>
+          <p className="text-white font-semibold">Github</p>
         </div>
       </header>
 
@@ -95,10 +110,11 @@ function App() {
             ) : (
               <div className="bg-gray-900  rounded-md output text-white w-full lg:w-1/2 p-2">
                 {
-                  output ? (
+                  displayedOutput ? (
                     <div>
-                      {output}
+                      {displayedOutput}
                     </div>
+                    // <div dangerouslySetInnerHTML={{ __html: displayedOutput }} />
                   ):(
                     <Typewriter
                       options={{

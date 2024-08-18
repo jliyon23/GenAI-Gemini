@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Typewriter from "typewriter-effect";
+import { FaGithub } from "react-icons/fa";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -56,7 +57,7 @@ function App() {
           <h1 className="text-4xl text-white font-bold">
             Gen<span className="text-cyan-400">AI</span>
           </h1>
-          <p className="text-white font-semibold">Github</p>
+          <a href="https://github.com/jliyon23/GenAI-Gemini" target="_blank" className="text-white text-3xl font-semibold"> <FaGithub/> </a>
         </div>
       </header>
 
